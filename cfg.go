@@ -19,16 +19,16 @@ type Value string
 //
 // - - -
 //
-// key: string value
+// key= string value
 //
-// key2: 32
+// key2= 32
 //
 //
-// key 3 :this,is, string, array
+// key 3 =this,is, string, array
 //
-// key 4: 2, 4, 6,8,10 , 12
+// key 4 = 2, 4, 6,8,10 , 12
 //
-// key5 :2003-4-15
+// key5 = 2003-4-15
 //
 // #comment
 func Load(str string) (Config, error) {
@@ -42,7 +42,7 @@ func Load(str string) (Config, error) {
 		if line[0] == '#' {
 			continue
 		}
-		t := strings.Split(line, ":")
+		t := strings.Split(line, "=")
 		if len(t) != 2 {
 			return nil, fmt.Errorf("\"%s\" is not a config", line)
 		}
