@@ -106,3 +106,13 @@ func (v Value) IntArray() ([]int, error) {
 	}
 	return ia, nil
 }
+
+func (v Value) Bool() (b bool) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			b = false
+		}
+	}()
+	return strings.ToLower(string(v)) == "true"
+}

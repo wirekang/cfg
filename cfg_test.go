@@ -6,7 +6,7 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	con := "num: 3\n#hello\ntitle : The TITLE  \ntags: javascript, golang , c sharp\npi : 3.14\n\ndate: 2018-1-02"
+	con := "num= 3\n#hello\ntitle = The TITLE  \ntags= javascript, golang , c sharp\npi = 3.14\n\ndate= 2018-1-02\nflag = true"
 	c, err := Load(con)
 	if err != nil {
 		t.Fatal(err)
@@ -29,6 +29,14 @@ func TestConfig(t *testing.T) {
 	}
 
 	if d, e := c.Find("date").Date(); e != nil || d.Year() != 2018 || d.Month() != time.January || d.Day() != 2 {
+		t.FailNow()
+	}
+
+	if !c.Find("flag").Bool() {
+		t.FailNow()
+	}
+
+	if c.Find("notexists").Bool() {
 		t.FailNow()
 	}
 }
