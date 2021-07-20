@@ -6,7 +6,7 @@ import (
 )
 
 func TestConfig(t *testing.T) {
-	con := "num= 3\n#hello\ntitle = The TITLE  \ntags= javascript, golang , c sharp\npi = 3.14\n\ndate= 2018-1-02\nflag = true"
+	con := "num: 3\n#hello\ntitle : The TITLE  \ntags: javascript, golang , c sharp\npi : 3.14\n\ndate: 2018-1-02\nflag : true"
 	c, err := Load(con)
 	if err != nil {
 		t.Fatal(err)

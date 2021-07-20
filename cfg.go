@@ -1,4 +1,4 @@
-//Package cfg parses simple config format file or string.
+//Package cfg parses line separated key-value format file or string.
 package cfg
 
 import (
@@ -9,31 +9,18 @@ import (
 	"time"
 )
 
-// Config is map of key-Value.
-type Config map[string]Value
+type Config struct {
+	m map[string]Value
+}
 
-// Value is value of a key.
 type Value string
 
-// Load parses config from string by following format:
-//
-// - - -
-//
-// key= string value
-//
-// key2= 32
-//
-//
-// key 3 =this,is, string, array
-//
-// key 4 = 2, 4, 6,8,10 , 12
-//
-// key5 = 2003-4-15
-//
-// #comment
-func Load(str string) (Config, error) {
-	configs := make(Config)
+var ErrWrongFormat = fmt.Errorf("line parsing failed")
+
+// Load parses config from string
+func Load(str string) (rst Config, err error) {
 	lines := strings.Split(str, "\n")
+	rst.m = make(map[string]Value, len(lines))
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" {
@@ -42,32 +29,33 @@ func Load(str string) (Config, error) {
 		if line[0] == '#' {
 			continue
 		}
-		t := strings.Split(line, "=")
+		t := strings.Split(line, ":")
 		if len(t) != 2 {
-			return nil, fmt.Errorf("\"%s\" is not a config", line)
+			err = ErrWrongFormat
+			return
 		}
-		configs[strings.TrimSpace(t[0])] = Value(strings.TrimSpace(t[1]))
+		rst.m[strings.TrimSpace(t[0])] = Value(strings.TrimSpace(t[1]))
 	}
-	return configs, nil
+	return
 }
 
 // LoadFile calls Load() with the files content.
-func LoadFile(filename string) (Config, error) {
+func LoadFile(filename string) (rst Config, err error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return nil, err
+		return
 	}
 	return Load(string(bytes))
 }
 
 // Find returns value with the key.
 func (c Config) Find(key string) Value {
-	return c[key]
+	return c.m[key]
 }
 
 // IsExist returns true of value with the key is exists.
 func (c Config) IsExist(key string) bool {
-	return c[key] != ""
+	return c.m[key] != ""
 }
 
 func (v Value) String() string {
@@ -107,6 +95,7 @@ func (v Value) IntArray() ([]int, error) {
 	return ia, nil
 }
 
+// Bool returns true if given value is "true"(case insensitive) or 1.
 func (v Value) Bool() (b bool) {
 	defer func() {
 		r := recover()
@@ -114,5 +103,5 @@ func (v Value) Bool() (b bool) {
 			b = false
 		}
 	}()
-	return strings.ToLower(string(v)) == "true"
+	return v == "1" || strings.ToLower(string(v)) == "true"
 }
