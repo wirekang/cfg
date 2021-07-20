@@ -11,32 +11,44 @@ func TestConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !c.IsExist("num") {
+
+	v, ok := c.Get("num")
+	i, err := v.Int()
+	if !ok || err != nil || i != 3 {
 		t.FailNow()
 	}
-	if i, e := c.Find("num").Int(); e != nil || i != 3 {
-		t.FailNow()
-	}
-	if c.Find("title").String() != "The TITLE" {
-		t.FailNow()
-	}
-	tags := c.Find("tags").StringArray()
-	if tags[0] != "javascript" || tags[1] != "golang" || tags[2] != "c sharp" {
-		t.FailNow()
-	}
-	if f, e := c.Find("pi").Float(); e != nil || f != 3.14 {
+	v, ok = c.Get("title")
+	s := v.String()
+	if !ok || s != "The TITLE" {
 		t.FailNow()
 	}
 
-	if d, e := c.Find("date").Date(); e != nil || d.Year() != 2018 || d.Month() != time.January || d.Day() != 2 {
+	v, ok = c.Get("tags")
+	sa := v.StringArray()
+	if !ok || len(sa) != 3 || sa[0] != "javascript" || sa[1] != "golang" || sa[2] != "c sharp" {
 		t.FailNow()
 	}
 
-	if !c.Find("flag").Bool() {
+	v, ok = c.Get("pi")
+	f, err := v.Float()
+	if !ok || err != nil || f != 3.14 {
 		t.FailNow()
 	}
 
-	if c.Find("notexists").Bool() {
+	v, ok = c.Get("date")
+	d, err := v.Date()
+	if !ok || err != nil || d.Year() != 2018 || d.Month() != time.January || d.Day() != 2 {
+		t.FailNow()
+	}
+
+	v, ok = c.Get("flag")
+	b := v.Bool()
+	if !ok || !b {
+		t.FailNow()
+	}
+
+	_, ok = c.Get("not exists")
+	if ok {
 		t.FailNow()
 	}
 }

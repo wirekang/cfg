@@ -49,13 +49,9 @@ func LoadFile(filename string) (rst Config, err error) {
 }
 
 // Find returns value with the key.
-func (c Config) Find(key string) Value {
-	return c.m[key]
-}
-
-// IsExist returns true of value with the key is exists.
-func (c Config) IsExist(key string) bool {
-	return c.m[key] != ""
+func (c Config) Get(key string) (v Value, ok bool) {
+	v, ok = c.m[key]
+	return
 }
 
 func (v Value) String() string {
@@ -70,6 +66,7 @@ func (v Value) Float() (float64, error) {
 	return strconv.ParseFloat(string(v), 64)
 }
 
+// Date returns formated time like "2006-1-2" .
 func (v Value) Date() (time.Time, error) {
 	return time.Parse("2006-1-2", string(v))
 }
